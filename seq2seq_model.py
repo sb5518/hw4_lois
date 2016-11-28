@@ -125,7 +125,7 @@ class Seq2SeqModel(object):
     # The seq2seq function: we use embedding for the input and attention.
     def seq2seq_f(encoder_inputs, decoder_inputs, do_decode):
         if self.forward_only == False:
-            print "Training with attention"
+            print("Training with attention")
             return tf.nn.seq2seq.embedding_attention_seq2seq(#embedding_attention_seq2seq(#embedding_attention_seq2seq(
                   encoder_inputs,
                   decoder_inputs,
@@ -137,7 +137,7 @@ class Seq2SeqModel(object):
                   feed_previous=do_decode,
                   dtype=dtype)
         else:
-            print "Training without attention"
+            print("Training without attention")
             return tf.nn.seq2seq.embedding_rnn_seq2seq(encoder_inputs,
                           decoder_inputs,
                           cell,
