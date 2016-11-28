@@ -53,9 +53,9 @@ class Seq2SeqModel(object):
                batch_size,
                learning_rate,
                learning_rate_decay_factor,
-               forward_only,
                use_lstm=False,
                num_samples=512,
+               forward_only=False,
                dtype=tf.float32):
     """Create the model.
 
@@ -89,7 +89,6 @@ class Seq2SeqModel(object):
     self.learning_rate_decay_op = self.learning_rate.assign(
         self.learning_rate * learning_rate_decay_factor)
     self.global_step = tf.Variable(0, trainable=False)
-    self.forward_only =forward_only
 
     # If we use sampled softmax, we need an output projection.
     output_projection = None
@@ -124,42 +123,29 @@ class Seq2SeqModel(object):
 
     # The seq2seq function: we use embedding for the input and attention.
     def seq2seq_f(encoder_inputs, decoder_inputs, do_decode):
-        if self.forward_only == False:
-            """
-            print("Training with attention")
-            return tf.nn.seq2seq.embedding_attention_seq2seq(#embedding_attention_seq2seq(#embedding_attention_seq2seq(
-                  encoder_inputs,
-                  decoder_inputs,
-                  cell,
-                  num_encoder_symbols=source_vocab_size,
-                  num_decoder_symbols=target_vocab_size,
-                  embedding_size=size,
-                  output_projection=output_projection,
-                  feed_previous=do_decode,
-                  dtype=dtype)
-            """
-            print("Training without attention")
-            return tf.nn.seq2seq.embedding_rnn_seq2seq(encoder_inputs,
-                                                       decoder_inputs,
-                                                       cell,
-                                                       num_encoder_symbols=source_vocab_size,
-                                                       num_decoder_symbols=target_vocab_size,
-                                                       embedding_size=size,
-                                                       output_projection=output_projection,
-                                                       feed_previous=do_decode,
-                                                       dtype=dtype)
-        else:
-            print("Training without attention")
-            return tf.nn.seq2seq.embedding_rnn_seq2seq(encoder_inputs,
-                          decoder_inputs,
-                          cell,
-                                                       num_encoder_symbols=source_vocab_size,
-                                                       num_decoder_symbols=target_vocab_size,
-                                                       embedding_size=size,
-                                                       output_projection=output_projection,
-                                                       feed_previous=do_decode,
-                                                       dtype=dtype)
-
+      print("Training with attention")
+      return tf.nn.seq2seq.embedding_attention_seq2seq(#embedding_attention_seq2seq(#embedding_attention_seq2seq(
+          encoder_inputs,
+          decoder_inputs,
+          cell,
+          num_encoder_symbols=source_vocab_size,
+          num_decoder_symbols=target_vocab_size,
+          embedding_size=size,
+          output_projection=output_projection,
+          feed_previous=do_decode,
+          dtype=dtype)
+      """
+      print("Training without attention")
+      return tf.nn.seq2seq.embedding_rnn_seq2seq(encoder_inputs,
+                                                     decoder_inputs,
+                                                     cell,
+                                                     num_encoder_symbols=source_vocab_size,
+                                                     num_decoder_symbols=target_vocab_size,
+                                                     embedding_size=size,
+                                                     output_projection=output_projection,
+                                                     feed_previous=do_decode,
+                                                     dtype=dtype)
+       """
     # Feeds for inputs.
     self.encoder_inputs = []
     self.decoder_inputs = []
@@ -178,10 +164,10 @@ class Seq2SeqModel(object):
                for i in xrange(len(self.decoder_inputs) - 1)]
 
     # Training outputs and losses.
-    if self.forward_only:
+    if forward_only:
       self.outputs, self.losses = tf.nn.seq2seq.model_with_buckets(
           self.encoder_inputs, self.decoder_inputs, targets,
-          self.target_weights, buckets, lambda x, y: seq2seq_f(x, y, False),
+          self.target_weights, buckets, lambda x, y: seq2seq_f(x, y, True),
           softmax_loss_function=softmax_loss_function)
       # If we use output projection, we need to project outputs for decoding.
       if output_projection is not None:
@@ -199,7 +185,7 @@ class Seq2SeqModel(object):
 
     # Gradients and SGD update operation for training the model.
     params = tf.trainable_variables()
-    if not self.forward_only:
+    if not forward_only:
       self.gradient_norms = []
       self.updates = []
       opt = tf.train.GradientDescentOptimizer(self.learning_rate)
@@ -258,7 +244,7 @@ class Seq2SeqModel(object):
     input_feed[last_target] = np.zeros([self.batch_size], dtype=np.int32)
 
     # Output feed: depends on whether we do a backward step or not.
-    if not self.forward_only:
+    if not forward_only:
       output_feed = [self.updates[bucket_id],  # Update Op that does SGD.
                      self.gradient_norms[bucket_id],  # Gradient norm.
                      self.losses[bucket_id]]  # Loss for this batch.
@@ -268,7 +254,7 @@ class Seq2SeqModel(object):
         output_feed.append(self.outputs[bucket_id][l])
 
     outputs = session.run(output_feed, input_feed)
-    if not self.forward_only:
+    if not forward_only:
       return outputs[1], outputs[2], None  # Gradient norm, loss, no outputs.
     else:
       return None, outputs[0], outputs[1:]  # No gradient norm, loss, outputs.

@@ -301,3 +301,41 @@ def prepare_wmt_data(data_dir, en_vocabulary_size, ja_vocabulary_size, tokenizer
           en_dev_ids_path, ja_dev_ids_path,
           en_test_ids_path, ja_test_ids_path,
           en_vocab_path, ja_vocab_path)
+
+
+def seq2seq_f(encoder_inputs, decoder_inputs, do_decode):
+  if self.forward_only == False:
+    """
+    print("Training with attention")
+    return tf.nn.seq2seq.embedding_attention_seq2seq(#embedding_attention_seq2seq(#embedding_attention_seq2seq(
+          encoder_inputs,
+          decoder_inputs,
+          cell,
+          num_encoder_symbols=source_vocab_size,
+          num_decoder_symbols=target_vocab_size,
+          embedding_size=size,
+          output_projection=output_projection,
+          feed_previous=do_decode,
+          dtype=dtype)
+    """
+    print("Training without attention")
+    return tf.nn.seq2seq.embedding_rnn_seq2seq(encoder_inputs,
+                                               decoder_inputs,
+                                               cell,
+                                               num_encoder_symbols=source_vocab_size,
+                                               num_decoder_symbols=target_vocab_size,
+                                               embedding_size=size,
+                                               output_projection=output_projection,
+                                               feed_previous=do_decode,
+                                               dtype=dtype)
+  else:
+    print("Training without attention")
+    return tf.nn.seq2seq.embedding_rnn_seq2seq(encoder_inputs,
+                                               decoder_inputs,
+                                               cell,
+                                               num_encoder_symbols=source_vocab_size,
+                                               num_decoder_symbols=target_vocab_size,
+                                               embedding_size=size,
+                                               output_projection=output_projection,
+                                               feed_previous=do_decode,
+                                               dtype=dtype)
