@@ -53,9 +53,9 @@ class Seq2SeqModel(object):
                batch_size,
                learning_rate,
                learning_rate_decay_factor,
+               forward_only,
                use_lstm=False,
                num_samples=512,
-               forward_only=False,
                dtype=tf.float32):
     """Create the model.
 
@@ -89,6 +89,7 @@ class Seq2SeqModel(object):
     self.learning_rate_decay_op = self.learning_rate.assign(
         self.learning_rate * learning_rate_decay_factor)
     self.global_step = tf.Variable(0, trainable=False)
+    self.forward_only =forward_only
 
     # If we use sampled softmax, we need an output projection.
     output_projection = None
@@ -123,16 +124,29 @@ class Seq2SeqModel(object):
 
     # The seq2seq function: we use embedding for the input and attention.
     def seq2seq_f(encoder_inputs, decoder_inputs, do_decode):
-      return tf.nn.seq2seq.embedding_attention_seq2seq(#embedding_attention_seq2seq(#embedding_attention_seq2seq(
-          encoder_inputs,
-          decoder_inputs,
-          cell,
-          num_encoder_symbols=source_vocab_size,
-          num_decoder_symbols=target_vocab_size,
-          embedding_size=size,
-          output_projection=output_projection,
-          feed_previous=do_decode,
-          dtype=dtype)
+        if self.forward_only == False:
+          return tf.nn.seq2seq.embedding_attention_seq2seq(#embedding_attention_seq2seq(#embedding_attention_seq2seq(
+              encoder_inputs,
+              decoder_inputs,
+              cell,
+              num_encoder_symbols=source_vocab_size,
+              num_decoder_symbols=target_vocab_size,
+              embedding_size=size,
+              output_projection=output_projection,
+              feed_previous=do_decode,
+              dtype=dtype)
+        else:
+            return tf.nn.seq2seq.embedding_attention_seq2seq(
+                encoder_inputs,
+                decoder_inputs,
+                cell,
+                num_encoder_symbols=source_vocab_size,
+                num_decoder_symbols=target_vocab_size,
+                embedding_size=size,
+                output_projection=output_projection,
+                feed_previous=do_decode,
+                dtype=dtype)
+
 
     # Feeds for inputs.
     self.encoder_inputs = []
