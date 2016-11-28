@@ -257,7 +257,7 @@ class Seq2SeqModel(object):
         output_feed.append(self.outputs[bucket_id][l])
 
     outputs = session.run(output_feed, input_feed)
-    if not forward_only:
+    if not self.forward_only:
       return outputs[1], outputs[2], None  # Gradient norm, loss, no outputs.
     else:
       return None, outputs[0], outputs[1:]  # No gradient norm, loss, outputs.
