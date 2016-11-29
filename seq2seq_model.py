@@ -146,7 +146,7 @@ class Seq2SeqModel(object):
                                                      feed_previous=do_decode,
                                                      dtype=dtype)
        """
-        
+
     # Feeds for inputs.
     self.encoder_inputs = []
     self.decoder_inputs = []

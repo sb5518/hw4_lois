@@ -55,7 +55,7 @@ tf.app.flags.DEFINE_float("max_gradient_norm", 5.0,
 tf.app.flags.DEFINE_integer("batch_size", 64,
                             "Batch size to use during training.")
 tf.app.flags.DEFINE_integer("size", 128, "Size of each model layer.")
-tf.app.flags.DEFINE_integer("num_layers", 1, "Number of layers in the model.")
+tf.app.flags.DEFINE_integer("num_layers", 3, "Number of layers in the model.")
 tf.app.flags.DEFINE_integer("en_vocab_size", 40000, "English vocabulary size.")
 tf.app.flags.DEFINE_integer("ja_vocab_size", 40000, "Japanese vocabulary size.")
 tf.app.flags.DEFINE_string("data_dir", "/tmp", "Data directory")
@@ -67,8 +67,6 @@ tf.app.flags.DEFINE_integer("steps_per_checkpoint", 200,
 tf.app.flags.DEFINE_boolean("decode", False,
                             "Set to True for interactive decoding.")
 tf.app.flags.DEFINE_boolean("self_test", False,
-                            "Run a self-test if this is set to True.")
-tf.app.flags.DEFINE_boolean("forward_only", False,
                             "Run a self-test if this is set to True.")
 tf.app.flags.DEFINE_boolean("use_fp16", False,
                             "Train using fp16 instead of fp32.")
@@ -117,7 +115,7 @@ def read_data(target_path, source_path, max_size=None):
   return data_set
 
 
-def create_model(session):
+def create_model(session, forward_only):
   """Create translation model and initialize or load parameters in session."""
   dtype = tf.float16 if FLAGS.use_fp16 else tf.float32
   model = seq2seq_model.Seq2SeqModel(
@@ -130,7 +128,7 @@ def create_model(session):
       FLAGS.batch_size,
       FLAGS.learning_rate,
       FLAGS.learning_rate_decay_factor,
-      FLAGS.forward_only)
+      forward_only=forward_only)
   print("dopo")
   ckpt = tf.train.get_checkpoint_state(FLAGS.train_dir)
   if ckpt and tf.train.checkpoint_exists(ckpt.model_checkpoint_path):
@@ -152,7 +150,7 @@ def train():
   with tf.Session() as sess:
     # Create model.
     print("Creating %d layers of %d units." % (FLAGS.num_layers, FLAGS.size))
-    model = create_model(sess)
+    model = create_model(sess, False)
 
     # Read data into buckets and compute their sizes.
     print ("Reading development and training data (limit: %d)."
@@ -247,14 +245,14 @@ def train():
 def decode():
   with tf.Session() as sess:
     # Create model and load parameters.
-    model = create_model(sess)
+    model = create_model(sess, True)
     model.batch_size = 1  # We decode one sentence at a time.
 
     # Load vocabularies.
     en_vocab_path = os.path.join(FLAGS.data_dir,
-                                 "vocab%d.en" % FLAGS.en_vocab_size)
+                                 "vocab%d.en.txt" % FLAGS.en_vocab_size)
     ja_vocab_path = os.path.join(FLAGS.data_dir,
-                                 "vocab%d.ja" % FLAGS.ja_vocab_size)
+                                 "vocab%d.ja.txt" % FLAGS.ja_vocab_size)
     _ , rev_en_vocab = data_utils.initialize_vocabulary(en_vocab_path)
     ja_vocab, _ = data_utils.initialize_vocabulary(ja_vocab_path)
 
@@ -334,15 +332,15 @@ def test():
     
     #Load vocabularies
     en_vocab_path = os.path.join(FLAGS.data_dir,
-				"vocab%d.en" %FLAGS.en_vocab_size)
+				"vocab%d.en.txt" %FLAGS.en_vocab_size)
     ja_vocab_path = os.path.join(FLAGS.data_dir, 
-				"vocab%d.ja" %FLAGS.ja_vocab_size)
+				"vocab%d.ja.txt" %FLAGS.ja_vocab_size)
     _, rev_en_vocab = data_utils.initialize_vocabulary(en_vocab_path)
     ja_vocab, _ = data_utils.initialize_vocabulary(ja_vocab_path)
     
     predicted = []
     real = []
-    with gfile.GFile(test_path + ".ja", mode="rb") as data_file:
+    with gfile.GFile(test_path + ".ja.txt", mode="rb") as data_file:
       for sentence in data_file:
         # Get token-ids for the input sentence.
         token_ids = data_utils.sentence_to_token_ids(tf.compat.as_bytes(sentence), ja_vocab)
@@ -369,7 +367,7 @@ def test():
         # Print out Japanese sentence corresponding to outputs.
         predicted.append(data_utils.basic_tokenizer(" ".join([tf.compat.as_str(rev_en_vocab[output]) for output in outputs])))
 
-    with gfile.GFile(test_path + ".en", mode="rb") as data_file:
+    with gfile.GFile(test_path + ".en.txt", mode="rb") as data_file:
       for sentence in data_file:
         real.append(data_utils.basic_tokenizer(sentence))
     print("Saving predictions and real values")
