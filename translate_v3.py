@@ -22,7 +22,7 @@ the current checkpoint translates English sentences into Japanese.
 See the following papers for more information on neural translation models.
  * http://arxiv.org/abs/1409.3215
  * http://arxiv.org/abs/1409.0473
- * http://arxiv.org/abs/1412.2007
+ * http://arxiv.org/abs/1 412.2007
 """
 from __future__ import absolute_import
 from __future__ import division
@@ -250,9 +250,9 @@ def decode():
 
     # Load vocabularies.
     en_vocab_path = os.path.join(FLAGS.data_dir,
-                                 "vocab%d.en.txt" % FLAGS.en_vocab_size)
+                                 "vocab%d.en" % FLAGS.en_vocab_size)
     ja_vocab_path = os.path.join(FLAGS.data_dir,
-                                 "vocab%d.ja.txt" % FLAGS.ja_vocab_size)
+                                 "vocab%d.ja" % FLAGS.ja_vocab_size)
     _ , rev_en_vocab = data_utils.initialize_vocabulary(en_vocab_path)
     ja_vocab, _ = data_utils.initialize_vocabulary(ja_vocab_path)
 
@@ -332,15 +332,15 @@ def test():
     
     #Load vocabularies
     en_vocab_path = os.path.join(FLAGS.data_dir,
-				"vocab%d.en.txt" %FLAGS.en_vocab_size)
+				"vocab%d.en" %FLAGS.en_vocab_size)
     ja_vocab_path = os.path.join(FLAGS.data_dir, 
-				"vocab%d.ja.txt" %FLAGS.ja_vocab_size)
+				"vocab%d.ja" %FLAGS.ja_vocab_size)
     _, rev_en_vocab = data_utils.initialize_vocabulary(en_vocab_path)
     ja_vocab, _ = data_utils.initialize_vocabulary(ja_vocab_path)
     
     predicted = []
     real = []
-    with gfile.GFile(test_path + ".ja.txt", mode="rb") as data_file:
+    with gfile.GFile(test_path + ".ja", mode="rb") as data_file:
       for sentence in data_file:
         # Get token-ids for the input sentence.
         token_ids = data_utils.sentence_to_token_ids(tf.compat.as_bytes(sentence), ja_vocab)
@@ -367,7 +367,7 @@ def test():
         # Print out Japanese sentence corresponding to outputs.
         predicted.append(data_utils.basic_tokenizer(" ".join([tf.compat.as_str(rev_en_vocab[output]) for output in outputs])))
 
-    with gfile.GFile(test_path + ".en.txt", mode="rb") as data_file:
+    with gfile.GFile(test_path + ".en.", mode="rb") as data_file:
       for sentence in data_file:
         real.append(data_utils.basic_tokenizer(sentence))
     print("Saving predictions and real values")
