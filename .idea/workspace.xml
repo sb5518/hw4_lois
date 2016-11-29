@@ -34,10 +34,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="seq2seq_model.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="seq2seq_model.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/seq2seq_model.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="306">
+            <state relative-caret-position="1791">
               <caret line="149" column="21" selection-start-line="149" selection-start-column="20" selection-end-line="149" selection-end-column="21" />
               <folding>
                 <element signature="e#753#791#0" expanded="true" />
@@ -46,11 +46,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="translate_v3.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="translate_v3.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/translate_v3.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1150">
-              <caret line="254" column="44" selection-start-line="254" selection-start-column="44" selection-end-line="254" selection-end-column="44" />
+            <state relative-caret-position="575">
+              <caret line="369" column="37" selection-start-line="369" selection-start-column="37" selection-end-line="369" selection-end-column="37" />
               <folding>
                 <element signature="e#1288#1326#0" expanded="true" />
               </folding>
@@ -372,22 +372,22 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/translate_v3.py">
+    <entry file="file://$PROJECT_DIR$/seq2seq_model.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1150">
-          <caret line="254" column="44" selection-start-line="254" selection-start-column="44" selection-end-line="254" selection-end-column="44" />
+        <state relative-caret-position="1791">
+          <caret line="149" column="21" selection-start-line="149" selection-start-column="20" selection-end-line="149" selection-end-column="21" />
           <folding>
-            <element signature="e#1288#1326#0" expanded="true" />
+            <element signature="e#753#791#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/seq2seq_model.py">
+    <entry file="file://$PROJECT_DIR$/translate_v3.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="149" column="21" selection-start-line="149" selection-start-column="20" selection-end-line="149" selection-end-column="21" />
+        <state relative-caret-position="575">
+          <caret line="369" column="37" selection-start-line="369" selection-start-column="37" selection-end-line="369" selection-end-column="37" />
           <folding>
-            <element signature="e#753#791#0" expanded="true" />
+            <element signature="e#1288#1326#0" expanded="true" />
           </folding>
         </state>
       </provider>

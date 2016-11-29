@@ -367,7 +367,7 @@ def test():
         # Print out Japanese sentence corresponding to outputs.
         predicted.append(data_utils.basic_tokenizer(" ".join([tf.compat.as_str(rev_en_vocab[output]) for output in outputs])))
 
-    with gfile.GFile(test_path + ".en.", mode="rb") as data_file:
+    with gfile.GFile(test_path + ".en", mode="rb") as data_file:
       for sentence in data_file:
         real.append(data_utils.basic_tokenizer(sentence))
     print("Saving predictions and real values")
