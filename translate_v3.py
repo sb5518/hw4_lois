@@ -381,6 +381,5 @@ def main(_):
     decode()
   else:
     train()
-
 if __name__ == "__main__":
   tf.app.run()

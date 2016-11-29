@@ -43,25 +43,6 @@ UNK_ID = 3
 _WORD_SPLIT = re.compile(b"([.,!?\"':;)(])")
 _DIGIT_RE = re.compile(br"\d")
 
-# URLs for WMT data.
-#_WMT_ENFR_TRAIN_URL = "http://www.statmt.org/wmt10/training-giga-fren.tar"
-#_WMT_ENFR_DEV_URL = "http://www.statmt.org/wmt15/dev-v2.tgz"
-
-
-def maybe_download(directory, filename, url):
-  """Download filename from url unless it's already in directory."""
-  if not os.path.exists(directory):
-    print("Creating directory %s" % directory)
-    os.mkdir(directory)
-  filepath = os.path.join(directory, filename)
-  if not os.path.exists(filepath):
-    print("Downloading %s to %s" % (url, filepath))
-    filepath, _ = urllib.request.urlretrieve(url, filepath)
-    statinfo = os.stat(filepath)
-    print("Succesfully downloaded", filename, statinfo.st_size, "bytes")
-  return filepath
-
-
 def gunzip_file(gz_path, new_path):
   """Unzips from gz_path into new_path."""
   print("Unpacking %s to %s" % (gz_path, new_path))
@@ -72,38 +53,16 @@ def gunzip_file(gz_path, new_path):
 
 
 def get_wmt_enja_train_set(directory):
-  """Download the WMT en-ja training corpus to directory unless it's there."""
   train_path = os.path.join(directory, "train")
-  #if not (gfile.Exists(train_path +".ja") and gfile.Exists(train_path +".en")):
-    #corpus_file = maybe_download(directory, "training-giga-fren.tar",
-    #                             _WMT_ENFR_TRAIN_URL)
-    #print("Extracting tar file %s" % corpus_file)
-    #with tarfile.open(corpus_file, "r") as corpus_tar:
-    #  corpus_tar.extractall(directory)
-    #gunzip_file(train_path + ".fr.gz", train_path + ".fr")
-    #gunzip_file(train_path + ".en.gz", train_path + ".en")
   return train_path
 
 def get_wmt_enja_test_set(directory):
-  """Download the WMT en-ja training corpus to directory unless it's there."""
   train_path = os.path.join(directory, "test")
   return train_path 
 
 
 def get_wmt_enja_dev_set(directory):
-  """Download the WMT en-ja training corpus to directory unless it's there."""
-  dev_name = "dev"
-  dev_path = os.path.join(directory, dev_name)
-  # if not (gfile.Exists(dev_path + ".fr") and gfile.Exists(dev_path + ".en")):
-  #   dev_file = maybe_download(directory, "dev-v2.tgz", _WMT_ENFR_DEV_URL)
-  #   print("Extracting tgz file %s" % dev_file)
-  #   with tarfile.open(dev_file, "r:gz") as dev_tar:
-  #     fr_dev_file = dev_tar.getmember("dev/" + dev_name + ".fr")
-  #     en_dev_file = dev_tar.getmember("dev/" + dev_name + ".en")
-  #     fr_dev_file.name = dev_name + ".fr"  # Extract without "dev/" prefix.
-  #     en_dev_file.name = dev_name + ".en"
-  #     dev_tar.extract(fr_dev_file, directory)
-  #     dev_tar.extract(en_dev_file, directory)
+  dev_path = os.path.join(directory, "dev")
   return dev_path
 
 
@@ -301,41 +260,3 @@ def prepare_wmt_data(data_dir, en_vocabulary_size, ja_vocabulary_size, tokenizer
           en_dev_ids_path, ja_dev_ids_path,
           en_test_ids_path, ja_test_ids_path,
           en_vocab_path, ja_vocab_path)
-
-
-def seq2seq_f(encoder_inputs, decoder_inputs, do_decode):
-  if self.forward_only == False:
-    """
-    print("Training with attention")
-    return tf.nn.seq2seq.embedding_attention_seq2seq(#embedding_attention_seq2seq(#embedding_attention_seq2seq(
-          encoder_inputs,
-          decoder_inputs,
-          cell,
-          num_encoder_symbols=source_vocab_size,
-          num_decoder_symbols=target_vocab_size,
-          embedding_size=size,
-          output_projection=output_projection,
-          feed_previous=do_decode,
-          dtype=dtype)
-    """
-    print("Training without attention")
-    return tf.nn.seq2seq.embedding_rnn_seq2seq(encoder_inputs,
-                                               decoder_inputs,
-                                               cell,
-                                               num_encoder_symbols=source_vocab_size,
-                                               num_decoder_symbols=target_vocab_size,
-                                               embedding_size=size,
-                                               output_projection=output_projection,
-                                               feed_previous=do_decode,
-                                               dtype=dtype)
-  else:
-    print("Training without attention")
-    return tf.nn.seq2seq.embedding_rnn_seq2seq(encoder_inputs,
-                                               decoder_inputs,
-                                               cell,
-                                               num_encoder_symbols=source_vocab_size,
-                                               num_decoder_symbols=target_vocab_size,
-                                               embedding_size=size,
-                                               output_projection=output_projection,
-                                               feed_previous=do_decode,
-                                               dtype=dtype)
